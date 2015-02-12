@@ -16,7 +16,7 @@ namespace Kickstarter.Api.Queries
 
         public async Task<Category> ApplyTo(IKickstarterSession session)
         {
-            var categoryList = await session.Query(new AllCategories());
+            var categoryList = await session.Query(new AllCategories()).ConfigureAwait(false);
             return categoryList.Categories.FirstOrDefault(c => String.Equals(c.Name, _name, StringComparison.CurrentCultureIgnoreCase));
         }
     }

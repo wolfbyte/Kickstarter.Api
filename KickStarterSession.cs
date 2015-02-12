@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Kickstarter.Api.Model;
@@ -13,20 +14,21 @@ namespace Kickstarter.Api
 
         public async Task<TResult> Get<TResult>(string path)
         {
-            using (var client = new WebClient())
+            using (var client = new HttpClient())
             {
-                client.Encoding = Encoding.UTF8;
-                var result = await client.DownloadStringTaskAsync(GetUrl(path));
-                return await result.ParsedAsJson<TResult>();
+                var result = await client.GetStringAsync(GetUrl(path)).ConfigureAwait(false);
+                return await result.ParsedAsJson<TResult>().ConfigureAwait(false);
             }
         }
 
         public async Task<TResult> Post<TResult>(string path, object parameters)
         {
-            using (var client = new WebClient())
+            using (var client = new HttpClient())
             {
-                var result = await client.UploadStringTaskAsync(GetUrl(path), "POST", parameters.ToJson());
-                return await result.ParsedAsJson<TResult>();
+                var content = new StringContent(parameters.ToJson());
+                var result = await client.PostAsync(GetUrl(path), content).ConfigureAwait(false);
+                var resultText = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return await resultText.ParsedAsJson<TResult>().ConfigureAwait(false);
             }
         }
 
@@ -51,7 +53,7 @@ namespace Kickstarter.Api
         {
             var logonResult = await Post<LogonResult>(
                 String.Format("xauth/access_token?client_id={0}", clientId),
-                new {email, password});
+                new {email, password}).ConfigureAwait(false);
 
             _accessToken = logonResult.AccessToken;
             User = logonResult.User;

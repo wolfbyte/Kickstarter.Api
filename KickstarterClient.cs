@@ -16,7 +16,7 @@ namespace Kickstarter.Api
         {
             var session = new KickStarterSession();
 
-            var loggedOn = await session.Logon(email, password, _clientId);
+            var loggedOn = await session.Logon(email, password, _clientId).ConfigureAwait(false);
 
             // TODO: Report successful logon
 

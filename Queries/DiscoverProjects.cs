@@ -45,7 +45,7 @@ namespace Kickstarter.Api.Queries
 
             while(true)
             {
-                var page = await session.Get<ProjectsList>(currentUrl);
+                var page = await session.Get<ProjectsList>(currentUrl).ConfigureAwait(false);
                 results.AddRange(page.Projects);
                 numberOfProjects += page.Projects.Count();
                 if (!page.Projects.Any() || numberOfProjects >= _projectCap)
